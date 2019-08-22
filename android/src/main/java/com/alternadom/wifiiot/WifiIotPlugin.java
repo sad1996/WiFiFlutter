@@ -184,7 +184,6 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
     }
 
     /**
-     *
      * @param poCall
      * @param poResult
      */
@@ -307,8 +306,8 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
 
                         Boolean clientIsReachable = client.isReachable();
                         Boolean shouldReturnCurrentClient = true;
-                        if ( finalOnlyReachables.booleanValue()) {
-                            if (!clientIsReachable.booleanValue()){
+                        if (finalOnlyReachables.booleanValue()) {
+                            if (!clientIsReachable.booleanValue()) {
                                 shouldReturnCurrentClient = Boolean.valueOf(false);
                             }
                         }
@@ -375,7 +374,7 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
         int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 65655434;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             moActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
         }
         receiver = createReceiver(eventSink);
@@ -385,14 +384,14 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
 
     @Override
     public void onCancel(Object o) {
-        if(receiver != null){
+        if (receiver != null) {
             moContext.unregisterReceiver(receiver);
             receiver = null;
         }
 
     }
 
-    private BroadcastReceiver createReceiver(final EventChannel.EventSink eventSink){
+    private BroadcastReceiver createReceiver(final EventChannel.EventSink eventSink) {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -400,11 +399,12 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
             }
         };
     }
-    JSONArray handleNetworkScanResult(){
+
+    JSONArray handleNetworkScanResult() {
         List<ScanResult> results = moWiFi.getScanResults();
         JSONArray wifiArray = new JSONArray();
 
-        Log.d("got wifiIotPlugin", "result number of SSID: "+ results.size());
+        Log.d("got wifiIotPlugin", "result number of SSID: " + results.size());
         try {
             for (ScanResult result : results) {
                 JSONObject wifiObject = new JSONObject();
@@ -433,7 +433,7 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {
-            Log.d("got wifiIotPlugin", "final result: "+ results.toString());
+            Log.d("got wifiIotPlugin", "final result: " + results.toString());
             return wifiArray;
         }
     }
@@ -443,7 +443,7 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
         try {
 
             int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 65655434;
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 moActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
             }
 
@@ -544,11 +544,11 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
                 Boolean joinOnce = poCall.argument("join_once");
 
                 final boolean connected = connectTo(ssid, password, security, joinOnce);
-                
-				final Handler handler = new Handler(Looper.getMainLooper());
+
+                final Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override
-                    public void run () {
+                    public void run() {
                         poResult.success(connected);
                     }
                 });
@@ -562,7 +562,7 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
     /// Callback returns true if ssid is in the range
     private void findAndConnect(final MethodCall poCall, final Result poResult) {
         int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 65655434;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && moContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             moActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
         }
         new Thread() {
@@ -573,8 +573,10 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
 
                 String security = null;
                 List<ScanResult> results = moWiFi.getScanResults();
+                System.out.println("List of Devices: " + results.size());
                 for (ScanResult result : results) {
                     String resultString = "" + result.SSID;
+                    System.out.println(resultString);
                     if (ssid.equals(resultString)) {
                         security = getSecurityType(result);
                     }
@@ -582,10 +584,10 @@ public class WifiIotPlugin implements MethodCallHandler, EventChannel.StreamHand
 
                 final boolean connected = connectTo(ssid, password, security, joinOnce);
 
-				final Handler handler = new Handler(Looper.getMainLooper());
+                final Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override
-                    public void run () {
+                    public void run() {
                         poResult.success(connected);
                     }
                 });
